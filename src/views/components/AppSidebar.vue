@@ -1,0 +1,108 @@
+<template>
+    <Sidebar collapsible="icon">
+        <SidebarContent>
+            <SidebarHeader>
+                <SidebarMenu>
+                    <SidebarMenuItem>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <SidebarMenuButton class="h-full">
+                                    <img src="@/assets/images/user.png" class="h-10 ml-2" />
+                                    <div class="flex flex-col">
+                                        <p class="ml-2 truncate font-semibold text-md">
+                                            Administrator
+                                        </p>
+                                        <p class="ml-2 truncate font-light text-xs">
+                                            Administrator
+                                        </p>
+                                    </div>
+                                    <ChevronDown class="ml-auto" />
+                                </SidebarMenuButton>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent class="w-[--bits-dropdown-menu-anchor-width]">
+                                <DropdownMenuItem>
+                                    <span>Change Password</span>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem>
+                                    <span>Logout</span>
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </SidebarMenuItem>
+                </SidebarMenu>
+            </SidebarHeader>
+            <SidebarGroup>
+                <SidebarGroupLabel>Application</SidebarGroupLabel>
+                <SidebarGroupContent>
+                    <SidebarMenu>
+                        <SidebarMenuItem v-for="menu in menus" :key="menu.title">
+                            <Collapsible>
+                                <CollapsibleTrigger asChild>
+                                    <SidebarMenuButton asChild>
+                                        <a :href="menu.url">
+                                            <component :is="menu.icon" />
+                                            <span>{{ menu.title }}</span>
+                                        </a>
+                                    </SidebarMenuButton>
+                                </CollapsibleTrigger>
+                                <CollapsibleContent>
+                                    <SidebarMenuSub
+                                        v-for="submenu in menu.submenus"
+                                        :key="submenu.title"
+                                    >
+                                        <a :href="menu.url">
+                                            <span>{{ submenu.title }}</span>
+                                        </a>
+                                    </SidebarMenuSub>
+                                </CollapsibleContent>
+                            </Collapsible>
+                        </SidebarMenuItem>
+                    </SidebarMenu>
+                </SidebarGroupContent>
+            </SidebarGroup>
+        </SidebarContent>
+    </Sidebar>
+</template>
+
+<script setup lang="ts">
+import {
+    SidebarContent,
+    Sidebar,
+    SidebarGroup,
+    SidebarGroupLabel,
+    SidebarGroupContent,
+    SidebarMenu,
+    SidebarMenuItem,
+    SidebarMenuButton,
+    SidebarMenuSub,
+    SidebarMenuSubItem,
+    SidebarHeader,
+} from '@/components/ui/sidebar'
+import {
+    DropdownMenu,
+    DropdownMenuTrigger,
+    DropdownMenuContent,
+    DropdownMenuItem,
+} from '@/components/ui/dropdown-menu'
+import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible'
+import { Home, Settings, User, ChevronDown, Lock } from 'lucide-vue-next'
+
+const menus = [
+    {
+        title: 'Home',
+        url: '#',
+        icon: Home,
+    },
+    {
+        title: 'Settings',
+        url: '#',
+        icon: Settings,
+        submenus: [
+            {
+                title: 'Users',
+                url: '#',
+            },
+        ],
+    },
+]
+</script>
