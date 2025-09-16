@@ -7,7 +7,7 @@
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <SidebarMenuButton class="h-full">
-                                    <img src="@/assets/images/user.png" class="h-10 ml-2" />
+                                    <img src="@/assets/images/user.png" class="ml-0 w-6" />
                                     <div class="flex flex-col">
                                         <p class="ml-2 truncate font-semibold text-md">
                                             Administrator
@@ -54,7 +54,7 @@
                                         v-for="submenu in menu.submenus"
                                         :key="submenu.title"
                                     >
-                                        <a :href="menu.url">
+                                        <a :href="submenu.url">
                                             <span>{{ submenu.title }}</span>
                                         </a>
                                     </SidebarMenuSub>
@@ -90,11 +90,12 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible'
 import { Home, Settings, User, ChevronDown, Lock, ChevronRight } from 'lucide-vue-next'
+import { useRoute, useRouter } from 'vue-router'
 
 const menus = [
     {
         title: 'Home',
-        url: '#',
+        url: 'home',
         icon: Home,
     },
     {
@@ -104,9 +105,14 @@ const menus = [
         submenus: [
             {
                 title: 'Users',
-                url: '#',
+                url: 'user',
             },
         ],
     },
 ]
+
+const router = useRouter()
+const goTo = (link: string) => {
+    router.push(link)
+}
 </script>
