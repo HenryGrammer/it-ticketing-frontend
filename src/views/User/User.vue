@@ -50,15 +50,19 @@
                                 <hr />
                                 <form @submit.prevent="userStore.handleStoreUser()">
                                     <Form>
-                                        <FormField v-slot="{ componentField }" name="username">
+                                        <FormField name="myForm">
                                             <FormItem>
                                                 <FormLabel>Name</FormLabel>
                                                 <FormControl>
-                                                    <Input
-                                                        type="text"
-                                                        placeholder="Enter name"
-                                                        v-bind="componentField"
-                                                    />
+                                                    <Input type="text" placeholder="Enter name" />
+                                                </FormControl>
+                                                <FormLabel>Email</FormLabel>
+                                                <FormControl>
+                                                    <Input type="email" placeholder="Enter email" />
+                                                </FormControl>
+                                                <FormLabel>Role</FormLabel>
+                                                <FormControl>
+                                                    <Input type="email" placeholder="Enter email" />
                                                 </FormControl>
                                             </FormItem>
                                         </FormField>

@@ -7,7 +7,10 @@
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <SidebarMenuButton class="h-full">
-                                    <img src="@/assets/images/user.png" class="ml-0 w-6" />
+                                    <Avatar class="ml-0 w-6">
+                                        <AvatarImage src="@/assets/images/user.png" />
+                                        <AvatarFallback>IT</AvatarFallback>
+                                    </Avatar>
                                     <div class="flex flex-col">
                                         <p class="ml-2 truncate font-semibold text-md">
                                             Administrator
@@ -90,6 +93,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible'
 import { Home, Settings, User, ChevronDown, Lock, ChevronRight } from 'lucide-vue-next'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { useRoute, useRouter } from 'vue-router'
 
 const menus = [
