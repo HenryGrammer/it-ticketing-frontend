@@ -34,10 +34,48 @@
             </div>
             <Card class="mt-5">
                 <CardHeader>
-                    <Button class="w-fit pointer-events-auto">
-                        <Plus />
-                        Create users
-                    </Button>
+                    <div>
+                        <Dialog v-model:open="userStore.isOpenDialog">
+                            <DialogTrigger>
+                                <Button>
+                                    <Plus />
+                                    Create users
+                                </Button>
+                            </DialogTrigger>
+
+                            <DialogContent>
+                                <DialogHeader>
+                                    <DialogTitle>Add new user</DialogTitle>
+                                </DialogHeader>
+                                <hr />
+                                <form @submit.prevent="userStore.handleStoreUser()">
+                                    <Form>
+                                        <FormField v-slot="{ componentField }" name="username">
+                                            <FormItem>
+                                                <FormLabel>Name</FormLabel>
+                                                <FormControl>
+                                                    <Input
+                                                        type="text"
+                                                        placeholder="Enter name"
+                                                        v-bind="componentField"
+                                                    />
+                                                </FormControl>
+                                            </FormItem>
+                                        </FormField>
+                                    </Form>
+                                    <DialogFooter class="mt-4">
+                                        <Button type="submit" :disabled="userStore.isSubmitting">
+                                            {{
+                                                userStore.isSubmitting
+                                                    ? 'Saving...'
+                                                    : 'Save changes'
+                                            }}
+                                        </Button>
+                                    </DialogFooter>
+                                </form>
+                            </DialogContent>
+                        </Dialog>
+                    </div>
                 </CardHeader>
             </Card>
         </main>
@@ -54,16 +92,32 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card'
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+    DialogClose,
+} from '@/components/ui/dialog'
+import {
+    Form,
+    FormControl,
+    FormDescription,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from '@/components/ui/form/'
+import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Plus } from 'lucide-vue-next'
+import { useUserStore } from '@/stores/user'
 
-// interface userData {
-//     id: number
-//     name: string
-//     email: string
-//     password: string
-//     role: number
-//     department_id: number
-//     company_id: number
-// }
+import { toTypedSchema } from '@vee-validate/zod'
+import * as z from 'zod'
+
+const userStore = useUserStore()
 </script>
