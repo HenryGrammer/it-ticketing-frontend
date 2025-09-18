@@ -119,9 +119,9 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Plus } from 'lucide-vue-next'
 import { useUserStore } from '@/stores/user'
-
-import { toTypedSchema } from '@vee-validate/zod'
-import * as z from 'zod'
+import { onMounted } from 'vue'
 
 const userStore = useUserStore()
+
+onMounted(() => {})
 </script>

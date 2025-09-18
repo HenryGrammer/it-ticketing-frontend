@@ -2,10 +2,10 @@ import { defineStore } from 'pinia'
 import api from '@/api'
 import { boolean } from 'zod/v4'
 
-// interface loginForm {
-//     email: string
-//     password: string
-// }
+interface User {
+    email: string
+    password: string
+}
 
 export const useUserStore = defineStore('user', {
     state: () => {
@@ -16,9 +16,11 @@ export const useUserStore = defineStore('user', {
             // } as loginForm,
             isSubmitting: false as boolean,
             isOpenDialog: false as boolean,
+            user: [],
         }
     },
     actions: {
+        async getUser() {},
         async handleStoreUser() {
             try {
                 // console.log('submitted')

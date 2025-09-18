@@ -16,6 +16,15 @@
                             autocomplete="email"
                             v-model="loginStore.loginForm.email"
                         />
+
+                        <template v-if="loginStore.errors.email && loginStore.errors.email.length">
+                            <p
+                                class="text-red-500 font-semibold text-xs ml-2"
+                                v-for="error in loginStore.errors.email"
+                            >
+                                {{ error }}
+                            </p>
+                        </template>
                     </div>
                     <div class="mb-3">
                         <Input
@@ -25,6 +34,16 @@
                             autocomplete="current-password"
                             v-model="loginStore.loginForm.password"
                         />
+                        <template
+                            v-if="loginStore.errors.password && loginStore.errors.password.length"
+                        >
+                            <p
+                                class="text-red-500 font-semibold text-xs ml-2"
+                                v-for="error in loginStore.errors.password"
+                            >
+                                {{ error }}
+                            </p>
+                        </template>
                         <p class="text-sm p-1 text-muted-foreground text-right">
                             <a href="#">Forgot Password</a>
                         </p>
