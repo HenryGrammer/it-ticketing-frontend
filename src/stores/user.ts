@@ -20,7 +20,13 @@ export const useUserStore = defineStore('user', {
         }
     },
     actions: {
-        async getUser() {},
+        async getUser() {
+            try {
+                const response = await api.get('/api/user/all')
+            } catch (error) {
+                console.error(error)
+            }
+        },
         async handleStoreUser() {
             try {
                 // console.log('submitted')

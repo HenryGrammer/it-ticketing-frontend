@@ -7,6 +7,13 @@
             <div class="bg-white h-screen flex flex-col items-center justify-center">
                 <h1 class="text-2xl font-semibold tracking-tight">Welcome to Ticketing System</h1>
                 <p class="text-muted-foreground text-sm">Please login to your account</p>
+                <Alert variant="destructive" class="my-4 w-fit" v-if="loginStore.alertMessage">
+                    <AlertCircle class="w-4 h-4" />
+                    <AlertTitle>Error</AlertTitle>
+                    <AlertDescription>
+                        {{ loginStore.alertMessage }}
+                    </AlertDescription>
+                </Alert>
                 <form @submit.prevent="loginStore.login()" class="mt-5">
                     <div class="mb-3">
                         <Input
@@ -58,17 +65,11 @@
 </template>
 
 <script setup lang="ts">
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-} from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { useLoginStore } from '@/stores/login'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { AlertCircle } from 'lucide-vue-next'
 
 const loginStore = useLoginStore()
 </script>

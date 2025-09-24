@@ -27,7 +27,11 @@
                                     <span>Change Password</span>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem>
-                                    <span>Logout</span>
+                                    <span>
+                                        <button type="button" @click="loginStore.logoutUser()">
+                                            Logout
+                                        </button>
+                                    </span>
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
@@ -95,6 +99,9 @@ import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/component
 import { Home, Settings, User, ChevronDown, Lock, ChevronRight } from 'lucide-vue-next'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { useRoute, useRouter } from 'vue-router'
+import { useLoginStore } from '@/stores/login'
+
+const loginStore = useLoginStore()
 
 const menus = [
     {

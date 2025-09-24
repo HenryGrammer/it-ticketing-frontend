@@ -123,5 +123,7 @@ import { onMounted } from 'vue'
 
 const userStore = useUserStore()
 
-onMounted(() => {})
+onMounted(() => {
+    userStore.getUser()
+})
 </script>
