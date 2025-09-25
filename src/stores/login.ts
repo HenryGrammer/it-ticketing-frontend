@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import api from '@/api'
-import axios from 'axios'
+import { toast } from 'vue-sonner'
 
 interface loginForm {
     email: string
@@ -20,29 +20,37 @@ export const useLoginStore = defineStore('login', {
                 password: '',
             } as loginForm,
             errors: {} as Error,
-            alertMessage: '' as string,
+            isDisabled: false as boolean,
         }
     },
     actions: {
         async login() {
             try {
+                this.isDisabled = true
                 await api.get('/sanctum/csrf-cookie')
                 const response = await api.post('/api/login', this.loginForm)
-
                 if (response.data.status == 400) {
-                    this.alertMessage = response.data.message
+                    toast.error(response.data.message, { position: 'top-right' })
+                } else {
+                    toast.success(response.data.message, { position: 'top-right' })
                 }
+
+                localStorage.setItem('user', response.data.user)
             } catch (error: any) {
                 this.errors = error.response.data.errors
+            } finally {
+                this.isDisabled = false
             }
         },
+
         async logoutUser() {
             try {
-                // const response = await api.post('/api/logout')
-                // console.log(response.data)
-                console.log('asdaddasdasd')
+                const response = await api.post('/api/logout')
+                localStorage.removeItem('user')
+
+                toast.success(response.data.message, { position: 'top-right' })
             } catch (error) {
-                console.error(error)
+                toast.error('Whoops! There as an error', { position: 'top-right' })
             }
         },
     },

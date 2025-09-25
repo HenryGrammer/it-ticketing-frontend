@@ -7,13 +7,6 @@
             <div class="bg-white h-screen flex flex-col items-center justify-center">
                 <h1 class="text-2xl font-semibold tracking-tight">Welcome to Ticketing System</h1>
                 <p class="text-muted-foreground text-sm">Please login to your account</p>
-                <Alert variant="destructive" class="my-4 w-fit" v-if="loginStore.alertMessage">
-                    <AlertCircle class="w-4 h-4" />
-                    <AlertTitle>Error</AlertTitle>
-                    <AlertDescription>
-                        {{ loginStore.alertMessage }}
-                    </AlertDescription>
-                </Alert>
                 <form @submit.prevent="loginStore.login()" class="mt-5">
                     <div class="mb-3">
                         <Input
@@ -56,7 +49,14 @@
                         </p>
                     </div>
                     <div class="mb-3">
-                        <Button type="submit" placeholder="Password" class="w-100">Login</Button>
+                        <Button
+                            type="submit"
+                            placeholder="Password"
+                            class="w-100"
+                            :disabled="loginStore.isDisabled"
+                        >
+                            {{ loginStore.isDisabled ? 'Login...' : 'Login' }}
+                        </Button>
                     </div>
                 </form>
             </div>
@@ -70,6 +70,11 @@ import { Button } from '@/components/ui/button'
 import { useLoginStore } from '@/stores/login'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { AlertCircle } from 'lucide-vue-next'
+import { onUnmounted } from 'vue'
 
 const loginStore = useLoginStore()
+
+onUnmounted(() => {
+    console.log('asd')
+})
 </script>

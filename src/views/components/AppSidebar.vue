@@ -26,12 +26,8 @@
                                 <DropdownMenuItem>
                                     <span>Change Password</span>
                                 </DropdownMenuItem>
-                                <DropdownMenuItem>
-                                    <span>
-                                        <button type="button" @click="loginStore.logoutUser()">
-                                            Logout
-                                        </button>
-                                    </span>
+                                <DropdownMenuItem @click="loginStore.logoutUser()">
+                                    <span>Logout</span>
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
