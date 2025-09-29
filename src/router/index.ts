@@ -39,8 +39,6 @@ router.beforeEach((to, from) => {
 
     if (to.meta.requiredAuth && !user) {
         return { path: '/' }
-    } else if (!to.meta.requiredAuth && user) {
-        return { path: '/home' }
     }
 })
 

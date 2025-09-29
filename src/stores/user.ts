@@ -1,30 +1,29 @@
 import { defineStore } from 'pinia'
 import api from '@/api'
-import { boolean } from 'zod/v4'
-
+import { toast } from 'vue-sonner'
 interface User {
+    name: string
     email: string
-    password: string
+    department: string
+    company: string
 }
 
 export const useUserStore = defineStore('user', {
     state: () => {
         return {
-            // loginForm: {
-            //     email: '',
-            //     password: '',
-            // } as loginForm,
             isSubmitting: false as boolean,
             isOpenDialog: false as boolean,
-            user: [],
+            user: [] as User[],
         }
     },
     actions: {
         async getUser() {
             try {
                 const response = await api.get('/api/user/all')
-            } catch (error) {
-                console.error(error)
+
+                this.user = response.data
+            } catch (error: any) {
+                toast.error(error.response.data.message, { position: 'top-right' })
             }
         },
         async handleStoreUser() {
@@ -36,9 +35,7 @@ export const useUserStore = defineStore('user', {
                 setTimeout(() => {
                     this.isSubmitting = false
                 }, 1000)
-            } catch (error) {
-                console.error(error)
-            }
+            } catch (error: any) {}
         },
     },
 })

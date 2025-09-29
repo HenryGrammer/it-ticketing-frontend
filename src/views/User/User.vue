@@ -32,7 +32,7 @@
                     </div>
                 </div>
             </div>
-            <Card class="mt-5">
+            <Card class="mt-5 px-3">
                 <CardHeader>
                     <div>
                         <Dialog v-model:open="userStore.isOpenDialog">
@@ -81,6 +81,8 @@
                         </Dialog>
                     </div>
                 </CardHeader>
+
+                <UserDataTable :columns="userColumn" :data="userStore.user" />
             </Card>
         </main>
     </Layout>
@@ -88,6 +90,9 @@
 
 <script setup lang="ts">
 import Layout from '../Layout/Layout.vue'
+import UserDataTable from '../components/UserTable/UserDataTable.vue'
+import userColumn from '../components/UserTable/userColumn'
+
 import {
     Card,
     CardContent,
@@ -119,11 +124,11 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Plus } from 'lucide-vue-next'
 import { useUserStore } from '@/stores/user'
-import { onMounted } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 
 const userStore = useUserStore()
 
-onMounted(() => {
-    userStore.getUser()
+onMounted(async () => {
+    const response = await userStore.getUser()
 })
 </script>
