@@ -54,27 +54,100 @@
                                             <FormItem>
                                                 <FormLabel>Name</FormLabel>
                                                 <FormControl>
-                                                    <Input type="text" placeholder="Enter name" />
+                                                    <Input
+                                                        type="text"
+                                                        placeholder="Enter name"
+                                                        v-model="userStore.userForm.name"
+                                                    />
+                                                    <div v-if="userStore.errors.name">
+                                                        <p
+                                                            class="text-red-500 text-xs"
+                                                            v-for="error in userStore.errors.name"
+                                                        >
+                                                            {{ error }}
+                                                        </p>
+                                                    </div>
                                                 </FormControl>
                                                 <FormLabel>Email</FormLabel>
                                                 <FormControl>
-                                                    <Input type="email" placeholder="Enter email" />
+                                                    <Input
+                                                        type="email"
+                                                        placeholder="Enter email"
+                                                        v-model="userStore.userForm.email"
+                                                    />
+                                                    <div v-if="userStore.errors.email">
+                                                        <p
+                                                            class="text-red-500 text-xs"
+                                                            v-for="error in userStore.errors.email"
+                                                        >
+                                                            {{ error }}
+                                                        </p>
+                                                    </div>
                                                 </FormControl>
-                                                <FormLabel>Role</FormLabel>
+                                                <FormLabel>Company</FormLabel>
                                                 <FormControl>
-                                                    <Input type="email" placeholder="Enter email" />
+                                                    <Select v-model="userStore.userForm.company">
+                                                        <SelectTrigger class="w-full">
+                                                            <SelectValue
+                                                                placeholder="Select a company"
+                                                            />
+                                                        </SelectTrigger>
+                                                        <SelectContent class="w-full" side="bottom">
+                                                            <SelectGroup>
+                                                                <SelectItem
+                                                                    :value="company.id"
+                                                                    :key="company.id"
+                                                                    v-for="company in userStore.company"
+                                                                >
+                                                                    {{ company.code }}
+                                                                </SelectItem>
+                                                            </SelectGroup>
+                                                        </SelectContent>
+                                                    </Select>
+                                                    <div v-if="userStore.errors.company">
+                                                        <p
+                                                            class="text-red-500 text-xs"
+                                                            v-for="error in userStore.errors
+                                                                .company"
+                                                        >
+                                                            {{ error }}
+                                                        </p>
+                                                    </div>
+                                                </FormControl>
+                                                <FormLabel>Department</FormLabel>
+                                                <FormControl>
+                                                    <Select v-model="userStore.userForm.department">
+                                                        <SelectTrigger class="w-full">
+                                                            <SelectValue
+                                                                placeholder="Select a department"
+                                                            />
+                                                        </SelectTrigger>
+                                                        <SelectContent class="w-full" side="bottom">
+                                                            <SelectGroup>
+                                                                <SelectItem
+                                                                    :value="department.id"
+                                                                    :key="department.id"
+                                                                    v-for="department in userStore.department"
+                                                                >
+                                                                    {{ department.code }}
+                                                                </SelectItem>
+                                                            </SelectGroup>
+                                                        </SelectContent>
+                                                    </Select>
+                                                    <div v-if="userStore.errors.department">
+                                                        <p
+                                                            class="text-red-500 text-xs"
+                                                            v-for="error in userStore.errors
+                                                                .department"
+                                                        >
+                                                            {{ error }}
+                                                        </p>
+                                                    </div>
                                                 </FormControl>
                                             </FormItem>
                                         </FormField>
                                     </Form>
                                     <DialogFooter class="mt-4">
-                                        <!-- <Button type="submit" :disabled="userStore.isSubmitting">
-                                            {{
-                                                userStore.isSubmitting
-                                                    ? 'Saving...'
-                                                    : 'Save changes'
-                                            }}
-                                        </Button> -->
                                         <Button :disabled="userStore.isSubmitting">
                                             <Loader2
                                                 class="w-4 h-4 mr-2 animate-spin"
@@ -158,13 +231,22 @@ import {
     FormLabel,
     FormMessage,
 } from '@/components/ui/form/'
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectLabel,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Plus } from 'lucide-vue-next'
 import { useUserStore } from '@/stores/user'
 import { onMounted, ref } from 'vue'
 import type { Header, Item } from 'vue3-easy-data-table'
-import { Search, Trash, SquarePen, Loader2 } from 'lucide-vue-next'
+import { Search, Trash, SquarePen, Loader2, ChevronsUpDown, Check } from 'lucide-vue-next'
 
 const userStore = useUserStore()
 
@@ -182,4 +264,6 @@ const headers: Header[] = [
     { text: 'Company', value: 'company.name' },
     { text: 'Department', value: 'department.name' },
 ]
+
+const value = ref<(typeof userStore.company)[0]>()
 </script>
