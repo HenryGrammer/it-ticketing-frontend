@@ -68,7 +68,18 @@
                                         </FormField>
                                     </Form>
                                     <DialogFooter class="mt-4">
-                                        <Button type="submit" :disabled="userStore.isSubmitting">
+                                        <!-- <Button type="submit" :disabled="userStore.isSubmitting">
+                                            {{
+                                                userStore.isSubmitting
+                                                    ? 'Saving...'
+                                                    : 'Save changes'
+                                            }}
+                                        </Button> -->
+                                        <Button :disabled="userStore.isSubmitting">
+                                            <Loader2
+                                                class="w-4 h-4 mr-2 animate-spin"
+                                                v-if="userStore.isSubmitting"
+                                            />
                                             {{
                                                 userStore.isSubmitting
                                                     ? 'Saving...'
@@ -82,7 +93,37 @@
                     </div>
                 </CardHeader>
 
-                <UserDataTable :columns="userColumn" :data="userStore.user" />
+                <div class="flex flex-row">
+                    <div class="relative w-full max-w-sm items-center">
+                        <Input
+                            id="search"
+                            type="search"
+                            v-model="searchValue"
+                            placeholder="Search..."
+                            class="pl-10"
+                        />
+                        <span
+                            class="absolute start-0 inset-y-0 flex items-center justify-center px-2"
+                        >
+                            <Search class="size-6 text-muted-foreground" />
+                        </span>
+                    </div>
+                </div>
+
+                <EasyDataTable
+                    border-cell
+                    buttons-pagination
+                    theme-color="#212121"
+                    :headers="headers"
+                    :items="userStore.user"
+                    :search-field="searchField"
+                    :search-value="searchValue"
+                >
+                    <template #item-action>
+                        <Button type="button" variant="destructive"><Trash /></Button>
+                        <Button type="button"><SquarePen /></Button>
+                    </template>
+                </EasyDataTable>
             </Card>
         </main>
     </Layout>
@@ -90,9 +131,6 @@
 
 <script setup lang="ts">
 import Layout from '../Layout/Layout.vue'
-import UserDataTable from '../components/UserTable/UserDataTable.vue'
-import userColumn from '../components/UserTable/userColumn'
-
 import {
     Card,
     CardContent,
@@ -124,11 +162,24 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Plus } from 'lucide-vue-next'
 import { useUserStore } from '@/stores/user'
-import { onMounted, reactive, ref } from 'vue'
+import { onMounted, ref } from 'vue'
+import type { Header, Item } from 'vue3-easy-data-table'
+import { Search, Trash, SquarePen, Loader2 } from 'lucide-vue-next'
 
 const userStore = useUserStore()
 
 onMounted(async () => {
-    const response = await userStore.getUser()
+    await userStore.getUser()
 })
+
+const searchField = ref<Array<string>>(['name', 'email', 'company.name', 'department.name'])
+const searchValue = ref<string>('')
+
+const headers: Header[] = [
+    { text: 'Action', value: 'action' },
+    { text: 'Name', value: 'name' },
+    { text: 'Email', value: 'email' },
+    { text: 'Company', value: 'company.name' },
+    { text: 'Department', value: 'department.name' },
+]
 </script>

@@ -36,6 +36,10 @@ export const useLoginStore = defineStore('login', {
                 }
 
                 localStorage.setItem('user', response.data.user)
+
+                setTimeout(() => {
+                    location.reload()
+                }, 2000)
             } catch (error: any) {
                 this.errors = error.response.data.errors
             } finally {
