@@ -40,6 +40,10 @@ router.beforeEach((to, from) => {
     if (to.meta.requiredAuth && !user) {
         return { path: '/' }
     }
+
+    if (!to.meta.requiredAuth && user) {
+        return { path: '/home' }
+    }
 })
 
 export default router

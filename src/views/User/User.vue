@@ -32,12 +32,12 @@
                     </div>
                 </div>
             </div>
-            <Card class="mt-5 px-3">
+            <Card class="mt-5">
                 <CardHeader>
                     <div>
                         <Dialog v-model:open="userStore.isOpenDialog">
                             <DialogTrigger>
-                                <Button>
+                                <Button @click="userStore.resetForm()">
                                     <Plus />
                                     Create users
                                 </Button>
@@ -166,37 +166,39 @@
                     </div>
                 </CardHeader>
 
-                <div class="flex flex-row">
-                    <div class="relative w-full max-w-sm items-center">
-                        <Input
-                            id="search"
-                            type="search"
-                            v-model="searchValue"
-                            placeholder="Search..."
-                            class="pl-10"
-                        />
-                        <span
-                            class="absolute start-0 inset-y-0 flex items-center justify-center px-2"
-                        >
-                            <Search class="size-6 text-muted-foreground" />
-                        </span>
-                    </div>
-                </div>
+                <CardContent>
+                    <!-- <div class="flex flex-row-reverse">
+                        <div class="relative w-full max-w-sm items-center">
+                            <Input
+                                id="search"
+                                type="search"
+                                placeholder="Search..."
+                                class="pl-10"
+                            />
+                            <span
+                                class="absolute start-0 inset-y-0 flex items-center justify-center px-2"
+                            >
+                                <Search class="size-6 text-muted-foreground" />
+                            </span>
+                        </div>
+                    </div> -->
 
-                <EasyDataTable
-                    border-cell
-                    buttons-pagination
-                    theme-color="#212121"
-                    :headers="headers"
-                    :items="userStore.user"
-                    :search-field="searchField"
-                    :search-value="searchValue"
-                >
-                    <template #item-action>
-                        <Button type="button" variant="destructive"><Trash /></Button>
-                        <Button type="button"><SquarePen /></Button>
-                    </template>
-                </EasyDataTable>
+                    <EasyDataTable
+                        border-cell
+                        buttons-pagination
+                        theme-color="#212121"
+                        v-model:server-options="userStore.serverOptions"
+                        :server-items-length="userStore.serverItemsLength"
+                        :loading="userStore.loading"
+                        :headers="userStore.tableHeader"
+                        :items="userStore.user"
+                    >
+                        <template #item-action>
+                            <Button type="button" variant="destructive"><Trash /></Button>
+                            <Button type="button"><SquarePen /></Button>
+                        </template>
+                    </EasyDataTable>
+                </CardContent>
             </Card>
         </main>
     </Layout>
@@ -232,6 +234,14 @@ import {
     FormMessage,
 } from '@/components/ui/form/'
 import {
+    Pagination,
+    PaginationContent,
+    PaginationEllipsis,
+    PaginationItem,
+    PaginationNext,
+    PaginationPrevious,
+} from '@/components/ui/pagination'
+import {
     Select,
     SelectContent,
     SelectGroup,
@@ -244,8 +254,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Plus } from 'lucide-vue-next'
 import { useUserStore } from '@/stores/user'
-import { onMounted, ref } from 'vue'
-import type { Header, Item } from 'vue3-easy-data-table'
+import { onMounted, ref, watch } from 'vue'
 import { Search, Trash, SquarePen, Loader2, ChevronsUpDown, Check } from 'lucide-vue-next'
 
 const userStore = useUserStore()
@@ -254,16 +263,13 @@ onMounted(async () => {
     await userStore.getUser()
 })
 
-const searchField = ref<Array<string>>(['name', 'email', 'company.name', 'department.name'])
-const searchValue = ref<string>('')
-
-const headers: Header[] = [
-    { text: 'Action', value: 'action' },
-    { text: 'Name', value: 'name' },
-    { text: 'Email', value: 'email' },
-    { text: 'Company', value: 'company.name' },
-    { text: 'Department', value: 'department.name' },
-]
-
-const value = ref<(typeof userStore.company)[0]>()
+watch(
+    () => {
+        userStore.serverOptions
+    },
+    () => {
+        userStore.getUser()
+    },
+    { deep: true },
+)
 </script>

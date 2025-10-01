@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import api from '@/api'
 import { toast } from 'vue-sonner'
+import router from '@/router'
 
 interface loginForm {
     email: string
@@ -28,18 +29,16 @@ export const useLoginStore = defineStore('login', {
             try {
                 this.isDisabled = true
                 await api.get('/sanctum/csrf-cookie')
+
                 const response = await api.post('/api/login', this.loginForm)
+
                 if (response.data.status == 400) {
                     toast.error(response.data.message, { position: 'top-right' })
                 } else {
                     toast.success(response.data.message, { position: 'top-right' })
+                    localStorage.setItem('user', response.data.user)
+                    router.push('/home')
                 }
-
-                localStorage.setItem('user', response.data.user)
-
-                setTimeout(() => {
-                    location.reload()
-                }, 2000)
             } catch (error: any) {
                 this.errors = error.response.data.errors
             } finally {
@@ -50,7 +49,11 @@ export const useLoginStore = defineStore('login', {
         async logoutUser() {
             try {
                 const response = await api.post('/api/logout')
-                localStorage.removeItem('user')
+
+                if (response.data.status == 200) {
+                    localStorage.removeItem('user')
+                    router.push('/login')
+                }
 
                 toast.success(response.data.message, { position: 'top-right' })
             } catch (error) {
