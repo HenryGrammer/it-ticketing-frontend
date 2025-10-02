@@ -89,7 +89,7 @@ export const useUserStore = defineStore('user', {
             if (action == 'edit') {
                 this.isOpenUpdateDialog = false
             } else {
-                this.isOpenCreateDialog = true
+                this.isOpenCreateDialog = false
             }
         },
         confirm(action: string, id: number) {
