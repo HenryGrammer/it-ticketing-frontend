@@ -4,6 +4,7 @@
         <main class="w-screen max-w-screen">
             <Navbar />
             <slot />
+            <!-- <FooterComponent /> -->
         </main>
     </SidebarProvider>
 </template>
@@ -12,4 +13,5 @@
 import { SidebarTrigger, SidebarProvider } from '@/components/ui/sidebar'
 import AppSidebar from '../components/AppSidebar.vue'
 import Navbar from '../components/Navbar.vue'
+import FooterComponent from '../components/FooterComponent.vue'
 </script>

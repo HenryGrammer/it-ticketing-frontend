@@ -26,7 +26,7 @@
                             </svg>
                         </div>
                         <div class="p-6 pt-0">
-                            <div class="text-2xl font-bold">0</div>
+                            <div class="text-2xl font-bold">{{ userStore.serverItemsLength }}</div>
                             <p class="text-xs text-muted-foreground">as of January 1970</p>
                         </div>
                     </div>
@@ -34,21 +34,27 @@
             </div>
             <Card class="mt-5">
                 <CardHeader>
-                    <div>
-                        <Dialog v-model:open="userStore.isOpenDialog">
-                            <DialogTrigger>
-                                <Button @click="userStore.resetForm()">
-                                    <Plus />
-                                    Create users
-                                </Button>
-                            </DialogTrigger>
+                    <p class="font-semibold [&:not(:first-child)]:mt-6">User Management</p>
+                </CardHeader>
 
-                            <DialogContent>
-                                <DialogHeader>
-                                    <DialogTitle>Add new user</DialogTitle>
-                                </DialogHeader>
+                <CardContent>
+                    <div class="flex justify-between">
+                        <Button @click="userStore.resetForm()">
+                            <Plus />
+                            Create users
+                        </Button>
+
+                        <DialogComponent
+                            :title="'Edit User'"
+                            :isOpen="userStore.isOpenCreateDialog"
+                        >
+                            <template #form>
                                 <hr />
-                                <form @submit.prevent="userStore.handleStoreUser()">
+                                <form
+                                    @submit.prevent="
+                                        userStore.handleUpdateUser(userStore.userForm.id)
+                                    "
+                                >
                                     <Form>
                                         <FormField name="myForm">
                                             <FormItem>
@@ -148,6 +154,13 @@
                                         </FormField>
                                     </Form>
                                     <DialogFooter class="mt-4">
+                                        <Button
+                                            type="button"
+                                            variant="secondary"
+                                            @click="userStore.closeDialog('add')"
+                                        >
+                                            Close
+                                        </Button>
                                         <Button :disabled="userStore.isSubmitting">
                                             <Loader2
                                                 class="w-4 h-4 mr-2 animate-spin"
@@ -161,19 +174,17 @@
                                         </Button>
                                     </DialogFooter>
                                 </form>
-                            </DialogContent>
-                        </Dialog>
-                    </div>
-                </CardHeader>
+                            </template>
+                        </DialogComponent>
 
-                <CardContent>
-                    <!-- <div class="flex flex-row-reverse">
-                        <div class="relative w-full max-w-sm items-center">
+                        <div class="relative w-full max-w-sm items-center mb-3">
                             <Input
                                 id="search"
                                 type="search"
                                 placeholder="Search..."
                                 class="pl-10"
+                                v-model="userStore.searchValue"
+                                @input="userStore.getUser()"
                             />
                             <span
                                 class="absolute start-0 inset-y-0 flex items-center justify-center px-2"
@@ -181,7 +192,7 @@
                                 <Search class="size-6 text-muted-foreground" />
                             </span>
                         </div>
-                    </div> -->
+                    </div>
 
                     <EasyDataTable
                         border-cell
@@ -192,12 +203,176 @@
                         :loading="userStore.loading"
                         :headers="userStore.tableHeader"
                         :items="userStore.user"
+                        :search-field="userStore.searchField"
+                        :search-value="userStore.searchValue"
                     >
-                        <template #item-action>
-                            <Button type="button" variant="destructive"><Trash /></Button>
-                            <Button type="button"><SquarePen /></Button>
+                        <template #item-action="{ id, status }">
+                            <Button
+                                type="button"
+                                class="bg-yellow-500 hover:bg-yellow-600"
+                                @click="userStore.handleEditUser(id)"
+                            >
+                                <SquarePen />
+                            </Button>
+
+                            <Button
+                                type="button"
+                                variant="destructive"
+                                @click="userStore.confirm('isDeactivate', id)"
+                                v-if="status == null"
+                            >
+                                <Trash />
+                            </Button>
+
+                            <Button
+                                type="button"
+                                class="bg-green-600 hover:bg-green-700"
+                                @click="userStore.confirm('isActivate', id)"
+                                v-else
+                            >
+                                <Check />
+                            </Button>
+                        </template>
+
+                        <template #item-status="{ status }">
+                            <Badge variant="destructive" v-if="status == 1">Inactive</Badge>
+                            <Badge class="bg bg-green-700" v-else>Active</Badge>
                         </template>
                     </EasyDataTable>
+
+                    <DialogComponent :title="'Edit User'" :isOpen="userStore.isOpenUpdateDialog">
+                        <template #form>
+                            <hr />
+                            <form
+                                @submit.prevent="userStore.handleUpdateUser(userStore.userForm.id)"
+                            >
+                                <Form>
+                                    <FormField name="myForm">
+                                        <FormItem>
+                                            <FormLabel>Name</FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    type="text"
+                                                    placeholder="Enter name"
+                                                    v-model="userStore.userForm.name"
+                                                />
+                                                <div v-if="userStore.errors.name">
+                                                    <p
+                                                        class="text-red-500 text-xs"
+                                                        v-for="error in userStore.errors.name"
+                                                    >
+                                                        {{ error }}
+                                                    </p>
+                                                </div>
+                                            </FormControl>
+                                            <FormLabel>Email</FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    type="email"
+                                                    placeholder="Enter email"
+                                                    v-model="userStore.userForm.email"
+                                                />
+                                                <div v-if="userStore.errors.email">
+                                                    <p
+                                                        class="text-red-500 text-xs"
+                                                        v-for="error in userStore.errors.email"
+                                                    >
+                                                        {{ error }}
+                                                    </p>
+                                                </div>
+                                            </FormControl>
+                                            <FormLabel>Company</FormLabel>
+                                            <FormControl>
+                                                <Select v-model="userStore.userForm.company">
+                                                    <SelectTrigger class="w-full">
+                                                        <SelectValue
+                                                            placeholder="Select a company"
+                                                        />
+                                                    </SelectTrigger>
+                                                    <SelectContent class="w-full" side="bottom">
+                                                        <SelectGroup>
+                                                            <SelectItem
+                                                                :value="company.id"
+                                                                :key="company.id"
+                                                                v-for="company in userStore.company"
+                                                            >
+                                                                {{ company.code }}
+                                                            </SelectItem>
+                                                        </SelectGroup>
+                                                    </SelectContent>
+                                                </Select>
+                                                <div v-if="userStore.errors.company">
+                                                    <p
+                                                        class="text-red-500 text-xs"
+                                                        v-for="error in userStore.errors.company"
+                                                    >
+                                                        {{ error }}
+                                                    </p>
+                                                </div>
+                                            </FormControl>
+                                            <FormLabel>Department</FormLabel>
+                                            <FormControl>
+                                                <Select v-model="userStore.userForm.department">
+                                                    <SelectTrigger class="w-full">
+                                                        <SelectValue
+                                                            placeholder="Select a department"
+                                                        />
+                                                    </SelectTrigger>
+                                                    <SelectContent class="w-full" side="bottom">
+                                                        <SelectGroup>
+                                                            <SelectItem
+                                                                :value="department.id"
+                                                                :key="department.id"
+                                                                v-for="department in userStore.department"
+                                                            >
+                                                                {{ department.code }}
+                                                            </SelectItem>
+                                                        </SelectGroup>
+                                                    </SelectContent>
+                                                </Select>
+                                                <div v-if="userStore.errors.department">
+                                                    <p
+                                                        class="text-red-500 text-xs"
+                                                        v-for="error in userStore.errors.department"
+                                                    >
+                                                        {{ error }}
+                                                    </p>
+                                                </div>
+                                            </FormControl>
+                                        </FormItem>
+                                    </FormField>
+                                </Form>
+                                <DialogFooter class="mt-4">
+                                    <Button
+                                        type="button"
+                                        variant="secondary"
+                                        @click="userStore.closeDialog('edit')"
+                                    >
+                                        Close
+                                    </Button>
+                                    <Button :disabled="userStore.isSubmitting">
+                                        <Loader2
+                                            class="w-4 h-4 mr-2 animate-spin"
+                                            v-if="userStore.isSubmitting"
+                                        />
+                                        {{
+                                            userStore.isSubmitting
+                                                ? 'Updating...'
+                                                : 'Update changes'
+                                        }}
+                                    </Button>
+                                </DialogFooter>
+                            </form>
+                        </template>
+                    </DialogComponent>
+
+                    <ConfirmComponent
+                        :title="
+                            userStore.isActivateOrDeactivate == 'deactivate'
+                                ? 'Are you sure you want to deactivate this account?'
+                                : 'Are you sure you want to activate this account?'
+                        "
+                    />
                 </CardContent>
             </Card>
         </main>
@@ -205,7 +380,10 @@
 </template>
 
 <script setup lang="ts">
+// My Components
 import Layout from '../Layout/Layout.vue'
+import DialogComponent from '../components/DialogComponent.vue'
+
 import {
     Card,
     CardContent,
@@ -234,14 +412,6 @@ import {
     FormMessage,
 } from '@/components/ui/form/'
 import {
-    Pagination,
-    PaginationContent,
-    PaginationEllipsis,
-    PaginationItem,
-    PaginationNext,
-    PaginationPrevious,
-} from '@/components/ui/pagination'
-import {
     Select,
     SelectContent,
     SelectGroup,
@@ -250,12 +420,15 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select'
+import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Plus } from 'lucide-vue-next'
 import { useUserStore } from '@/stores/user'
 import { onMounted, ref, watch } from 'vue'
 import { Search, Trash, SquarePen, Loader2, ChevronsUpDown, Check } from 'lucide-vue-next'
+import FooterComponent from '../components/FooterComponent.vue'
+import ConfirmComponent from '../components/ConfirmComponent.vue'
 
 const userStore = useUserStore()
 
