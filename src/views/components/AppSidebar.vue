@@ -57,7 +57,7 @@
                                         v-for="submenu in menu.submenus"
                                         :key="submenu.title"
                                     >
-                                        <a :href="submenu.url">
+                                        <a :href="submenu.url" class="my-1">
                                             <span>{{ submenu.title }}</span>
                                         </a>
                                     </SidebarMenuSub>
@@ -114,12 +114,11 @@ const menus = [
                 title: 'Users',
                 url: 'user',
             },
+            {
+                title: 'Company',
+                url: 'company',
+            },
         ],
     },
 ]
-
-const router = useRouter()
-const goTo = (link: string) => {
-    router.push(link)
-}
 </script>

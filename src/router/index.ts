@@ -1,4 +1,6 @@
+import { useLoginStore } from '@/stores/login'
 import Login from '@/views/Auth/Login.vue'
+import Company from '@/views/Company/Company.vue'
 import Home from '@/views/Home.vue'
 import User from '@/views/User/User.vue'
 import { createRouter, createWebHistory } from 'vue-router'
@@ -31,17 +33,29 @@ const router = createRouter({
                 requiredAuth: true,
             },
         },
+        {
+            path: '/company',
+            name: 'company',
+            component: Company,
+            meta: {
+                requiredAuth: true,
+            },
+        },
     ],
 })
 
-router.beforeEach((to, from) => {
-    const user = localStorage.getItem('user')
+router.beforeEach(async (to, from) => {
+    const userStore = useLoginStore()
 
-    if (to.meta.requiredAuth && !user) {
+    if (!userStore.user) {
+        await userStore.fetchUser()
+    }
+
+    if (to.meta.requiredAuth && !userStore.user) {
         return { path: '/' }
     }
 
-    if (!to.meta.requiredAuth && user) {
+    if (!to.meta.requiredAuth && userStore.user) {
         return { path: '/home' }
     }
 })

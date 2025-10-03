@@ -22,6 +22,7 @@ export const useLoginStore = defineStore('login', {
             } as loginForm,
             errors: {} as Error,
             isDisabled: false as boolean,
+            user: '' as string | null,
         }
     },
     actions: {
@@ -36,7 +37,6 @@ export const useLoginStore = defineStore('login', {
                     toast.error(response.data.message, { position: 'top-right' })
                 } else {
                     toast.success(response.data.message, { position: 'top-right' })
-                    localStorage.setItem('user', response.data.user)
                     router.push('/home')
                 }
             } catch (error: any) {
@@ -45,20 +45,28 @@ export const useLoginStore = defineStore('login', {
                 this.isDisabled = false
             }
         },
-
         async logoutUser() {
             try {
                 const response = await api.post('/api/logout')
 
-                if (response.data.status == 200) {
-                    localStorage.removeItem('user')
-                    router.push('/login')
-                }
-
                 toast.success(response.data.message, { position: 'top-right' })
+                this.user = null
+
+                this.loginForm.email = ''
+                this.loginForm.password = ''
+
+                router.push('/login')
             } catch (error) {
                 toast.error('Whoops! There as an error', { position: 'top-right' })
             }
+        },
+        async fetchUser() {
+            try {
+                const response = await api.get('/api/users/user')
+                const data = response.data
+
+                this.user = data.user.name
+            } catch (error) {}
         },
     },
 })

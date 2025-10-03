@@ -2,7 +2,6 @@ import { defineStore } from 'pinia'
 import api from '@/api'
 import { toast } from 'vue-sonner'
 import type { ServerOptions, Header } from 'vue3-easy-data-table'
-import { ref } from 'vue'
 
 interface User<TDepartment, TCompany> {
     name: string
@@ -123,8 +122,8 @@ export const useUserStore = defineStore('user', {
                 this.company = response.data.companies
                 this.department = response.data.departments
                 this.serverItemsLength = response.data.items.total
-            } catch (error) {
-                console.error(error)
+            } catch (error: any) {
+                toast.error(error.response.data.message, { position: 'top-right' })
             } finally {
                 this.loading = false
             }
