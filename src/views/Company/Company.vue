@@ -1,13 +1,44 @@
 <template>
     <Layout>
         <main class="p-5 h-screen bg-gray-50">
-            <div class="grid grid-cols-4">
+            <div class="grid grid-cols-4 gap-2">
                 <div class="grid-start-1">
                     <div class="rounded-xl border bg-card text-card-foreground shadow">
                         <div
                             class="gap-y-1.5 p-6 flex flex-row items-center justify-between space-y-0 pb-2"
                         >
                             <h3 class="tracking-tight text-sm font-medium">Total Company</h3>
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                class="h-4 w-4 text-muted-foreground"
+                            >
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <path
+                                    d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"
+                                ></path>
+                            </svg>
+                        </div>
+                        <div class="p-6 pt-0">
+                            <div class="text-2xl font-bold">
+                                {{ companyStore.serverItemsLength }}
+                            </div>
+                            <p class="text-xs text-muted-foreground">as of January 1970</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid-start-2">
+                    <div class="rounded-xl border bg-card text-card-foreground shadow">
+                        <div
+                            class="gap-y-1.5 p-6 flex flex-row items-center justify-between space-y-0 pb-2"
+                        >
+                            <h3 class="tracking-tight text-sm font-medium">Total Active Company</h3>
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 24 24"
@@ -39,81 +70,10 @@
 
                 <CardContent>
                     <div class="flex justify-between">
-                        <Button @click="companyStore.addBtnDialog()">
+                        <Button @click="companyStore.openDialogFunction('create')">
                             <Plus />
                             Create companies
                         </Button>
-
-                        <DialogComponent
-                            :title="'Add new company'"
-                            :isOpen="companyStore.isOpenCreateDialog"
-                        >
-                            <template #form>
-                                <hr />
-                                <form @submit.prevent="companyStore.handleStoreCompany()">
-                                    <Form>
-                                        <FormField name="myForm">
-                                            <FormItem>
-                                                <FormLabel>Code</FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        type="text"
-                                                        placeholder="Enter code"
-                                                        v-model="companyStore.companyForm.code"
-                                                    />
-                                                    <div v-if="companyStore.formError.code">
-                                                        <p
-                                                            class="text-red-500 text-xs"
-                                                            v-for="error in companyStore.formError
-                                                                .code"
-                                                        >
-                                                            {{ error }}
-                                                        </p>
-                                                    </div>
-                                                </FormControl>
-                                                <FormLabel>Name</FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        type="text"
-                                                        placeholder="Enter name"
-                                                        v-model="companyStore.companyForm.name"
-                                                    />
-                                                    <div v-if="companyStore.formError.name">
-                                                        <p
-                                                            class="text-red-500 text-xs"
-                                                            v-for="error in companyStore.formError
-                                                                .name"
-                                                        >
-                                                            {{ error }}
-                                                        </p>
-                                                    </div>
-                                                </FormControl>
-                                            </FormItem>
-                                        </FormField>
-                                    </Form>
-                                    <DialogFooter class="mt-4">
-                                        <Button
-                                            type="button"
-                                            variant="secondary"
-                                            @click="companyStore.closeBtnDialog()"
-                                        >
-                                            Close
-                                        </Button>
-                                        <Button :disabled="companyStore.isSubmitting">
-                                            <Loader2
-                                                class="w-4 h-4 mr-2 animate-spin"
-                                                v-if="companyStore.isSubmitting"
-                                            />
-                                            {{
-                                                companyStore.isSubmitting
-                                                    ? 'Saving...'
-                                                    : 'Save changes'
-                                            }}
-                                        </Button>
-                                    </DialogFooter>
-                                </form>
-                            </template>
-                        </DialogComponent>
 
                         <div class="relative w-full max-w-sm items-center mb-3">
                             <Input
@@ -153,115 +113,145 @@
                                 <SquarePen />
                             </Button>
 
-                            <!-- <Button
+                            <Button
                                 type="button"
                                 variant="destructive"
-                                @click="userStore.confirm('isDeactivate', id)"
+                                @click="companyStore.openAlertDialogFunction('deactivated', id)"
                                 v-if="status == null"
                             >
                                 <Trash />
-                            </Button> -->
+                            </Button>
 
                             <!-- <Button
                                 type="button"
                                 class="bg-green-600 hover:bg-green-700"
-                                @click="userStore.confirm('isActivate', id)"
+                                @click="companyStore.confirm('isActivate', id)"
                                 v-else
                             >
                                 <Check />
                             </Button> -->
                         </template>
 
-                        <!-- <template #item-status="{ status }">
+                        <template #item-status="{ status }">
                             <Badge variant="destructive" v-if="status == 1">Inactive</Badge>
                             <Badge class="bg bg-green-700" v-else>Active</Badge>
-                        </template> -->
-                    </EasyDataTable>
-
-                    <DialogComponent
-                        :title="'Edit Company'"
-                        :isOpen="companyStore.isOpenUpdateDialog"
-                    >
-                        <template #form>
-                            <hr />
-                            <form
-                                @submit.prevent="
-                                    companyStore.handleUpdateCompany(companyStore.companyForm.id)
-                                "
-                            >
-                                <Form>
-                                    <FormField name="myForm">
-                                        <FormItem>
-                                            <FormLabel>Name</FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    type="text"
-                                                    placeholder="Enter code"
-                                                    v-model="companyStore.companyForm.code"
-                                                />
-                                                <div v-if="companyStore.formError.code">
-                                                    <p
-                                                        class="text-red-500 text-xs"
-                                                        v-for="error in companyStore.formError.code"
-                                                    >
-                                                        {{ error }}
-                                                    </p>
-                                                </div>
-                                            </FormControl>
-                                            <FormLabel>Email</FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    type="text"
-                                                    placeholder="Enter name"
-                                                    v-model="companyStore.companyForm.name"
-                                                />
-                                                <div v-if="companyStore.formError.name">
-                                                    <p
-                                                        class="text-red-500 text-xs"
-                                                        v-for="error in companyStore.formError.name"
-                                                    >
-                                                        {{ error }}
-                                                    </p>
-                                                </div>
-                                            </FormControl>
-                                        </FormItem>
-                                    </FormField>
-                                </Form>
-                                <DialogFooter class="mt-4">
-                                    <Button
-                                        type="button"
-                                        variant="secondary"
-                                        @click="companyStore.closeUpdateBtnDialog()"
-                                    >
-                                        Close
-                                    </Button>
-                                    <Button :disabled="companyStore.isSubmitting">
-                                        <Loader2
-                                            class="w-4 h-4 mr-2 animate-spin"
-                                            v-if="companyStore.isSubmitting"
-                                        />
-                                        {{
-                                            companyStore.isSubmitting
-                                                ? 'Updating...'
-                                                : 'Update changes'
-                                        }}
-                                    </Button>
-                                </DialogFooter>
-                            </form>
                         </template>
-                    </DialogComponent>
-
-                    <!-- <ConfirmComponent
-                        :title="
-                            userStore.isActivateOrDeactivate == 'deactivate'
-                                ? 'Are you sure you want to deactivate this account?'
-                                : 'Are you sure you want to activate this account?'
-                        "
-                    /> -->
+                    </EasyDataTable>
                 </CardContent>
             </Card>
         </main>
     </Layout>
+
+    <Dialog :open="companyStore.openDialog">
+        <DialogContent>
+            <DialogHeader>
+                <DialogTitle v-if="companyStore.action == 'create'">Add new company</DialogTitle>
+                <DialogTitle v-else>Edit company</DialogTitle>
+            </DialogHeader>
+
+            <form
+                @submit.prevent="
+                    companyStore.action == 'create'
+                        ? companyStore.handleStoreCompany()
+                        : companyStore.handleUpdateCompany(companyStore.companyForm.id)
+                "
+            >
+                <Form>
+                    <FormField name="myForm">
+                        <FormItem>
+                            <FormLabel>Code</FormLabel>
+                            <FormControl>
+                                <Input
+                                    type="text"
+                                    placeholder="Enter code"
+                                    v-model="companyStore.companyForm.code"
+                                />
+                                <div v-if="companyStore.formError.code">
+                                    <p
+                                        class="text-red-500 text-xs"
+                                        v-for="error in companyStore.formError.code"
+                                    >
+                                        {{ error }}
+                                    </p>
+                                </div>
+                            </FormControl>
+                            <FormLabel>Name</FormLabel>
+                            <FormControl>
+                                <Input
+                                    type="text"
+                                    placeholder="Enter name"
+                                    v-model="companyStore.companyForm.name"
+                                />
+                                <div v-if="companyStore.formError.name">
+                                    <p
+                                        class="text-red-500 text-xs"
+                                        v-for="error in companyStore.formError.name"
+                                    >
+                                        {{ error }}
+                                    </p>
+                                </div>
+                            </FormControl>
+                        </FormItem>
+                    </FormField>
+                </Form>
+                <DialogFooter class="mt-4">
+                    <Button
+                        type="button"
+                        variant="secondary"
+                        @click="companyStore.closeDialogFunction()"
+                    >
+                        Close
+                    </Button>
+                    <Button :disabled="companyStore.isSubmitting">
+                        <Loader2
+                            class="w-4 h-4 mr-2 animate-spin"
+                            v-if="companyStore.isSubmitting"
+                        />
+
+                        <template v-if="companyStore.action == 'create'">
+                            {{ companyStore.isSubmitting ? 'Saving...' : 'Save changes' }}
+                        </template>
+                        <template v-else>
+                            {{ companyStore.isSubmitting ? 'Updating...' : 'Update changes' }}
+                        </template>
+                    </Button>
+                </DialogFooter>
+            </form>
+        </DialogContent>
+    </Dialog>
+
+    <AlertDialog :open="companyStore.alertDialog">
+        <AlertDialogContent>
+            <AlertDialogHeader>
+                <AlertDialogTitle>{{
+                    companyStore.action == 'deactivate'
+                        ? 'This user will be deactivated'
+                        : 'This user will be activated'
+                }}</AlertDialogTitle>
+                <AlertDialogDescription> This action cannot be undone. </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+                <AlertDialogCancel @click="companyStore.closeAlertDialogFunction()">
+                    Cancel
+                </AlertDialogCancel>
+                <AlertDialogAction v-if="companyStore.action == 'deactivate'">
+                    <!-- <template>
+                        <Loader2 class="w-4 h-4 mr-2 animate-spin" />
+                        Please wait...
+                    </template> -->
+                    Deactivate
+                </AlertDialogAction>
+
+                <!-- <AlertDialogAction v-else>
+                    <template>
+                        <Loader2 class="w-4 h-4 mr-2 animate-spin" />
+                        Please wait...
+                    </template>
+                    <template> Activate </template>
+                </AlertDialogAction> -->
+            </AlertDialogFooter>
+        </AlertDialogContent>
+    </AlertDialog>
 </template>
 
 <script setup lang="ts">
@@ -305,6 +295,17 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select'
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -324,10 +325,10 @@ onMounted(async () => {
 
 watch(
     () => {
-        // userStore.serverOptions
+        companyStore.serverOptions
     },
     () => {
-        // userStore.getUser()
+        companyStore.handleGetCompany()
     },
     { deep: true },
 )

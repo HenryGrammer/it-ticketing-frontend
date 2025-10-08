@@ -1,38 +1,27 @@
 <template>
-    <AlertDialog :open="userStore.isConfirm">
-        <!-- <AlertDialogTrigger>Open</AlertDialogTrigger> -->
+    <AlertDialog :open="isOpen">
         <AlertDialogContent>
             <AlertDialogHeader>
                 <AlertDialogTitle>{{ title }}</AlertDialogTitle>
                 <AlertDialogDescription> This action cannot be undone. </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-                <AlertDialogCancel @click="userStore.confirm('closeDialog', userStore.userForm.id)"
-                    >Cancel</AlertDialogCancel
-                >
-                <AlertDialogAction
-                    :disabled="userStore.isSubmitting"
-                    @click="userStore.handleDeactivateAccount(userStore.userForm.id)"
-                    v-if="userStore.isActivateOrDeactivate == 'deactivate'"
-                >
-                    <template v-if="userStore.isSubmitting">
+                <AlertDialogCancel @click=""> Cancel </AlertDialogCancel>
+                <AlertDialogAction>
+                    <!-- <template v-if="">
                         <Loader2 class="w-4 h-4 mr-2 animate-spin" />
                         Please wait...
                     </template>
-                    <template v-else> Deactivate </template>
+                    <template v-else> Deactivate </template> -->
                 </AlertDialogAction>
 
-                <AlertDialogAction
-                    :disabled="userStore.isSubmitting"
-                    @click="userStore.handleActivateAccount(userStore.userForm.id)"
-                    v-else
-                >
+                <!-- <AlertDialogAction>
                     <template v-if="userStore.isSubmitting">
                         <Loader2 class="w-4 h-4 mr-2 animate-spin" />
                         Please wait...
                     </template>
                     <template v-else> Activate </template>
-                </AlertDialogAction>
+                </AlertDialogAction> -->
             </AlertDialogFooter>
         </AlertDialogContent>
     </AlertDialog>
@@ -50,12 +39,11 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
-import { useUserStore } from '@/stores/user'
 import { Loader2 } from 'lucide-vue-next'
+import { ref } from 'vue'
 
-const userStore = useUserStore()
-
-defineProps<{
+const props = defineProps<{
     title: string
+    isOpen: boolean
 }>()
 </script>

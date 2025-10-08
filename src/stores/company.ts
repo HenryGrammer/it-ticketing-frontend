@@ -16,19 +16,17 @@ interface CompanyForm {
 }
 
 interface Error {
-    code: Array<string>
-    name: Array<string>
+    code?: Array<string>
+    name?: Array<string>
 }
 
 const useCompanyStore = defineStore('company', {
     state: () => {
         return {
-            isOpenCreateDialog: false as boolean,
             isSubmitting: false as boolean,
             company: [] as Array<Company>,
             companyForm: {} as CompanyForm,
             formError: {} as Error,
-            isOpenUpdateDialog: false as boolean,
 
             // DataTable
             tableHeader: [
@@ -58,15 +56,6 @@ const useCompanyStore = defineStore('company', {
         }
     },
     actions: {
-        addBtnDialog() {
-            this.isOpenCreateDialog = true
-        },
-        closeBtnDialog() {
-            this.isOpenCreateDialog = false
-        },
-        closeUpdateBtnDialog() {
-            this.isOpenUpdateDialog = false
-        },
         async handleGetCompany() {
             try {
                 this.loading = true
@@ -83,6 +72,7 @@ const useCompanyStore = defineStore('company', {
                 const data = response.data
 
                 this.company = data.items.data
+                this.serverItemsLength = response.data.items.total
             } catch (error: any) {
                 toast.error(error.response.data.message, { position: 'top-right' })
             } finally {
@@ -100,7 +90,6 @@ const useCompanyStore = defineStore('company', {
                     toast.error(data.msg, { position: 'top-right' })
                 } else {
                     toast.success(data.message, { position: 'top-right' })
-                    this.isOpenCreateDialog = false
 
                     this.companyForm.code = ''
                     this.companyForm.name = ''
@@ -114,8 +103,6 @@ const useCompanyStore = defineStore('company', {
             }
         },
         async handleEditCompany(id: number) {
-            this.isOpenUpdateDialog = true
-
             try {
                 const response = await api.get(`/api/companies/edit/${id}`)
                 const data = response.data.company
@@ -131,10 +118,16 @@ const useCompanyStore = defineStore('company', {
 
                 const response = await api.post(`/api/companies/update/${id}`, this.companyForm)
                 const data = response.data
+                toast.success(data.message, { position: 'top-right' })
 
-                console.log(data)
-            } catch (error) {}
+                await this.handleGetCompany()
+            } catch (error: any) {
+                this.formError = error.response.data.errors
+            } finally {
+                this.isSubmitting = false
+            }
         },
+        async handleDeactivation() {},
     },
 })
 
