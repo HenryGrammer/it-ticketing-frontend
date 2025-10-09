@@ -23,10 +23,13 @@ interface Error {
 const useCompanyStore = defineStore('company', {
     state: () => {
         return {
-            isSubmitting: false as boolean,
             company: [] as Array<Company>,
             companyForm: {} as CompanyForm,
             formError: {} as Error,
+            isSubmitting: false as boolean,
+            showModal: false as boolean,
+            showAlert: false as boolean,
+            mode: '' as string,
 
             // DataTable
             tableHeader: [
@@ -56,6 +59,24 @@ const useCompanyStore = defineStore('company', {
         }
     },
     actions: {
+        openModal() {
+            this.mode = 'create'
+            this.showModal = true
+
+            this.companyForm.code = ''
+            this.companyForm.name = ''
+            this.formError = {}
+        },
+        openDeactivation(id: number) {
+            this.mode = 'deactivate'
+            this.showAlert = true
+            this.companyForm.id = id
+        },
+        openActivation(id: number) {
+            this.mode = 'activate'
+            this.showAlert = true
+            this.companyForm.id = id
+        },
         async handleGetCompany() {
             try {
                 this.loading = true
@@ -93,6 +114,8 @@ const useCompanyStore = defineStore('company', {
 
                     this.companyForm.code = ''
                     this.companyForm.name = ''
+                    this.showModal = false
+
                     await this.handleGetCompany()
                 }
             } catch (error: any) {
@@ -104,12 +127,15 @@ const useCompanyStore = defineStore('company', {
         },
         async handleEditCompany(id: number) {
             try {
+                this.showModal = true
                 const response = await api.get(`/api/companies/edit/${id}`)
                 const data = response.data.company
 
                 this.companyForm.code = data.code
                 this.companyForm.name = data.name
                 this.companyForm.id = data.id
+                this.mode = 'edit'
+                this.formError = {}
             } catch (error) {}
         },
         async handleUpdateCompany(id: number | null) {
@@ -120,6 +146,8 @@ const useCompanyStore = defineStore('company', {
                 const data = response.data
                 toast.success(data.message, { position: 'top-right' })
 
+                this.showModal = false
+
                 await this.handleGetCompany()
             } catch (error: any) {
                 this.formError = error.response.data.errors
@@ -127,7 +155,38 @@ const useCompanyStore = defineStore('company', {
                 this.isSubmitting = false
             }
         },
-        async handleDeactivation() {},
+        async handleDeactivation(id: number | null) {
+            try {
+                this.isSubmitting = true
+                const response = await api.post(`/api/companies/deactivate/${id}`)
+                const data = response.data
+
+                this.showAlert = false
+
+                toast.success(data.message, { position: 'top-right' })
+                await this.handleGetCompany()
+            } catch (error) {
+                console.error(error)
+            } finally {
+                this.isSubmitting = false
+            }
+        },
+        async handleActivation(id: number | null) {
+            try {
+                this.isSubmitting = true
+                const response = await api.post(`/api/companies/activate/${id}`)
+                const data = response.data
+
+                this.showAlert = false
+
+                toast.success(data.message, { position: 'top-right' })
+                await this.handleGetCompany()
+            } catch (error) {
+                console.error(error)
+            } finally {
+                this.isSubmitting = false
+            }
+        },
     },
 })
 

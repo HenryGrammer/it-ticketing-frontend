@@ -6,22 +6,24 @@
                 <AlertDialogDescription> This action cannot be undone. </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-                <AlertDialogCancel @click=""> Cancel </AlertDialogCancel>
-                <AlertDialogAction>
-                    <!-- <template v-if="">
-                        <Loader2 class="w-4 h-4 mr-2 animate-spin" />
-                        Please wait...
-                    </template>
-                    <template v-else> Deactivate </template> -->
-                </AlertDialogAction>
+                <AlertDialogCancel @click="$emit('cancelAlert')"> Cancel </AlertDialogCancel>
 
-                <!-- <AlertDialogAction>
-                    <template v-if="userStore.isSubmitting">
-                        <Loader2 class="w-4 h-4 mr-2 animate-spin" />
-                        Please wait...
+                <AlertDialogAction :disabled="isDisabled" @click="$emit('submitCompanyStatus')">
+                    <template v-if="mode == 'deactivate'">
+                        <template v-if="isDisabled">
+                            <Spinner />
+                            Deactivating...
+                        </template>
+                        <template v-else>Deactivate</template>
                     </template>
-                    <template v-else> Activate </template>
-                </AlertDialogAction> -->
+                    <template v-else>
+                        <template v-if="isDisabled">
+                            <Spinner />
+                            Activating...
+                        </template>
+                        <template v-else>Activate</template>
+                    </template>
+                </AlertDialogAction>
             </AlertDialogFooter>
         </AlertDialogContent>
     </AlertDialog>
@@ -39,11 +41,16 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
-import { Loader2 } from 'lucide-vue-next'
-import { ref } from 'vue'
+import { Spinner } from '@/components/ui/spinner'
 
-const props = defineProps<{
+type Props = {
     title: string
     isOpen: boolean
-}>()
+    isDisabled: boolean
+    mode: string
+}
+
+const props = defineProps<Props>()
+
+defineEmits(['cancelAlert', 'submitCompanyStatus'])
 </script>
